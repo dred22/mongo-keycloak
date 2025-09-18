@@ -9,7 +9,9 @@ spring:
       database: example
       username: root
       password: password
+      authentication-database: admin
 
 
 logging.level:
-  org.springframework.data.mongodb: DEBUG
+  org.mongodb.driver.protocol: DEBUG
+  org.springframework.data.mongodb.core.MongoTemplate: DEBUG
