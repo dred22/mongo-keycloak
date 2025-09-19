@@ -1,0 +1,9 @@
+server:
+  port: 8001
+
+spring:
+  application.name: demo
+
+logging:
+  level:
+    web: DEBUG

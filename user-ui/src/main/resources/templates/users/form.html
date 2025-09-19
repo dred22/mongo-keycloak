@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${user.id != null and user.id != ''} ? 'Edit User' : 'Create New User'">User Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 th:text="${user.id != null and user.id != ''} ? 'Edit User' : 'Create New User'">User Form</h1>
+    <div class="d-flex align-items-center">
+      <label for="clientSelect" class="me-2">Client ID:</label>
+      <select id="clientSelect" class="form-select" style="width: auto;" onchange="changeClient()">
+        <option th:each="client : ${clients}"
+                th:value="${client}"
+                th:text="${client}"
+                th:selected="${client == selectedClient}">
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form th:action="@{/users/form}" th:object="${user}" method="post">
+        <input type="hidden" name="clientId" th:value="${selectedClient}">
+        <input type="hidden" th:field="*{id}">
+
+        <!-- Basic Information -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h5 class="text-muted border-bottom pb-2">Basic Information</h5>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" th:field="*{firstName}" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" th:field="*{lastName}" required>
+          </div>
+        </div>
+
+        <!-- CountryDto Information -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h5 class="text-muted border-bottom pb-2">Country Information</h5>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="countryName" class="form-label">Country Name</label>
+            <input type="text" class="form-control" id="countryName" th:field="*{country.name}">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="officialLanguage" class="form-label">Official Language</label>
+            <input type="text" class="form-control" id="officialLanguage" th:field="*{country.officialLanguage}">
+          </div>
+        </div>
+
+        <!-- Addresses -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h5 class="text-muted border-bottom pb-2 d-flex justify-content-between align-items-center">
+              Addresses
+              <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAddress()">Add Address</button>
+            </h5>
+          </div>
+          <div class="col-12">
+            <div id="addressesContainer">
+              <div th:if="${user.addresses == null or user.addresses.isEmpty()}" class="text-muted mb-3">
+                No addresses added. Click "Add Address" to add one.
+              </div>
+
+              <div th:each="address, iterStat : ${user.addresses}"
+                   class="address-item border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 th:text="'Address ' + ${iterStat.index + 1}"></h6>
+                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAddress(this)">Remove</button>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">City Name</label>
+                    <input type="text" class="form-control"
+                           th:field="*{addresses[__${iterStat.index}__].cityName}"
+                           th:name="'addresses[' + ${iterStat.index} + '].cityName'">
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <label class="form-label">ZIP Code</label>
+                    <input type="number" class="form-control"
+                           th:field="*{addresses[__${iterStat.index}__].zipCode}"
+                           th:name="'addresses[' + ${iterStat.index} + '].zipCode'">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="row">
+          <div class="col-12">
+            <div class="d-flex justify-content-between">
+              <a th:href="@{/users(x-client-id=${selectedClient})}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary" th:text="${user.id != null and user.id != ''} ? 'Update User' : 'Create User'">Submit</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  let addressIndex = /*[[${user.addresses != null ? user.addresses.size() : 0}]]*/ 0;
+
+  function addAddress() {
+      const container = document.getElementById('addressesContainer');
+
+      // Remove "no addresses" message if it exists
+      const noAddressesMsg = container.querySelector('.text-muted');
+      if (noAddressesMsg) {
+          noAddressesMsg.remove();
+      }
+
+      const addressHtml = `
+          <div class="address-item border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6>Address ${addressIndex + 1}</h6>
+                  <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeAddress(this)">Remove</button>
+              </div>
+              <div class="row">
+                  <div class="col-md-6 mb-2">
+                      <label class="form-label">City Name</label>
+                      <input type="text" class="form-control" name="addresses[${addressIndex}].cityName">
+                  </div>
+                  <div class="col-md-6 mb-2">
+                      <label class="form-label">ZIP Code</label>
+                      <input type="number" class="form-control" name="addresses[${addressIndex}].zipCode">
+                  </div>
+              </div>
+          </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', addressHtml);
+      addressIndex++;
+      updateAddressNumbers();
+  }
+
+  function removeAddress(button) {
+      button.closest('.address-item').remove();
+      updateAddressNumbers();
+
+      // Show "no addresses" message if no addresses left
+      const container = document.getElementById('addressesContainer');
+      if (container.children.length === 0) {
+          container.innerHTML = '<div class="text-muted mb-3">No addresses added. Click "Add Address" to add one.</div>';
+      }
+  }
+
+  function updateAddressNumbers() {
+      const addressItems = document.querySelectorAll('.address-item');
+      addressItems.forEach((item, index) => {
+          const title = item.querySelector('h6');
+          title.textContent = `Address ${index + 1}`;
+
+          // Update input names to maintain proper indexing
+          const inputs = item.querySelectorAll('input');
+          inputs.forEach(input => {
+              const name = input.getAttribute('name');
+              if (name.includes('addresses[')) {
+                  const fieldName = name.split('.')[1];
+                  input.setAttribute('name', `addresses[${index}].${fieldName}`);
+              }
+          });
+      });
+  }
+
+  function changeClient() {
+      const select = document.getElementById('clientSelect');
+      const selectedClient = select.value;
+      const currentPath = window.location.pathname;
+      const newUrl = currentPath + '?x-client-id=' + encodeURIComponent(selectedClient);
+      window.location.href = newUrl;
+  }
+</script>
+</body>
+</html>
