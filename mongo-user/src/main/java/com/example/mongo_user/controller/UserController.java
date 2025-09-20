@@ -1,6 +1,7 @@
 package com.example.mongo_user.controller;
 
 import com.example.mongo_user.entity.UserEntity;
+import com.example.mongo_user.model.UserDto;
 import com.example.mongo_user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class UserController {
   }
 
   @PostMapping
-  public UserEntity createUser(@RequestBody UserEntity userToCreate) {
+  public UserEntity createUser(@RequestBody UserDto userToCreate) {
     return userService.saveUser(userToCreate);
   }
 
