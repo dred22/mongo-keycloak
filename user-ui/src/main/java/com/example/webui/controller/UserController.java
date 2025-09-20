@@ -2,6 +2,8 @@ package com.example.webui.controller;
 
 import com.example.webui.model.UserDto;
 import com.example.webui.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,28 +13,31 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
   @Autowired
-  private UserService userService;
+  private final UserService userService;
 
   // GET /users - возвращает список пользователей
   @GetMapping
-    public String getUsers(@RequestHeader(value = "x-client-id", required = false) String clientId,
-                          @RequestParam(value = "x-client-id", required = false) String paramClientId,
-                          Model model) {
+  public String getUsers(@RequestHeader(value = "x-client-id", required = false) String clientId,
+      @RequestParam(value = "x-client-id", required = false) String paramClientId,
+      Model model) {
+    log.info("Get users with clientId [{}]", paramClientId);
     List<String> clients = userService.getClients();
-        String selectedClient = (clientId != null) ? clientId :
-                               (paramClientId != null) ? paramClientId :
-                               (clients.isEmpty() ? "" : clients.get(0));
+    String selectedClient = (clientId != null) ? clientId :
+        (paramClientId != null) ? paramClientId :
+            (clients.isEmpty() ? "" : clients.get(0));
 
-        List<UserDto> users = userService.getAllUsers(selectedClient);
+    List<UserDto> users = userService.getAllUsers(selectedClient);
 
     model.addAttribute("users", users);
     model.addAttribute("clients", clients);
-        model.addAttribute("selectedClient", selectedClient);
+    model.addAttribute("selectedClient", selectedClient);
 
     return "users/list";
   }
@@ -40,19 +45,20 @@ public class UserController {
   // GET /users/{id} - возвращает пользователя
   @GetMapping("/{id}")
   public String getUser(@PathVariable String id,
-                         @RequestHeader(value = "x-client-id", required = false) String clientId,
-                         @RequestParam(value = "x-client-id", required = false) String paramClientId,
+      @RequestHeader(value = "x-client-id", required = false) String clientId,
+      @RequestParam(value = "x-client-id", required = false) String paramClientId,
       Model model) {
+    log.info("Get an user with clientId[{}]", paramClientId);
     List<String> clients = userService.getClients();
     String selectedClient = (clientId != null) ? clientId :
-                               (paramClientId != null) ? paramClientId :
-                               (clients.isEmpty() ? "" : clients.get(0));
+        (paramClientId != null) ? paramClientId :
+            (clients.isEmpty() ? "" : clients.get(0));
 
     UserDto user = userService.getUserById(id, clientId);
 
     model.addAttribute("user", user);
     model.addAttribute("clients", clients);
-        model.addAttribute("selectedClient", selectedClient);
+    model.addAttribute("selectedClient", selectedClient);
 
     return "users/detail";
   }

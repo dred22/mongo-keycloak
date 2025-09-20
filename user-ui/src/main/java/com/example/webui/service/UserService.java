@@ -1,14 +1,19 @@
 package com.example.webui.service;
 
+import com.example.webui.client.MongoUserClient;
 import com.example.webui.model.UserDto;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
+  private final MongoUserClient mongoUserClient;
+
   public List<UserDto> getAllUsers(String clientId) {
-    return List.of(new UserDto());
+    return mongoUserClient.getUsers();
   }
 
   public List<String> getClients() {
@@ -16,18 +21,18 @@ public class UserService {
   }
 
   public UserDto getUserById(String id, String clientId) {
-    return new UserDto();
+    return mongoUserClient.getUser(id);
   }
 
   public UserDto createUser(UserDto user, String clientId) {
-    return new UserDto();
+    return mongoUserClient.createUser(user);
   }
 
-  public void updateUser(UserDto user, String clientId) {
-
+  public UserDto updateUser(UserDto user, String clientId) {
+    return mongoUserClient.createUser(user);
   }
 
   public void deleteUser(String id, String clientId) {
-
+    mongoUserClient.deleteUser(id);
   }
 }
