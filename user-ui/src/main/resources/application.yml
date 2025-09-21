@@ -3,7 +3,25 @@ server:
 
 spring:
   application.name: demo
+  cloud:
+    openfeign:
+      oauth2:
+        enabled: true
+        clientRegistrationId: keycloak-client
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak-client:
+            #provider: keycloak-idp
+            client-id: mongo-1
+            client-secret: 7UxCcmk6hUT8zBIfGCJlSVopiqziAyKe
+            authorization-grant-type: client_credentials
+        provider:
+          keycloak-client:
+            token-uri: http://localhost:8090/realms/mongo/protocol/openid-connect/token
 
 logging:
   level:
     web: DEBUG
+    com.example.webui.client.MongoUserClient: DEBUG
