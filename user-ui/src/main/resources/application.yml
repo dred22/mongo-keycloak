@@ -7,18 +7,23 @@ spring:
     openfeign:
       oauth2:
         enabled: true
-        clientRegistrationId: keycloak-client
+        clientRegistrationId: mongo-1
   security:
     oauth2:
       client:
         registration:
-          keycloak-client:
-            #provider: keycloak-idp
+          mongo-1:
+            provider: keycloak-idp
             client-id: mongo-1
             client-secret: 7UxCcmk6hUT8zBIfGCJlSVopiqziAyKe
             authorization-grant-type: client_credentials
+          mongo-2:
+            provider: keycloak-idp
+            client-id: mongo-2
+            client-secret: 5qDvQlTDRHss46QwEjmGS2hA7hlAHy9c
+            authorization-grant-type: client_credentials
         provider:
-          keycloak-client:
+          keycloak-idp:
             token-uri: http://localhost:8090/realms/mongo/protocol/openid-connect/token
 
 logging:
