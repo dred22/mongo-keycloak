@@ -54,7 +54,7 @@ public class UserController {
         (paramClientId != null) ? paramClientId :
             (clients.isEmpty() ? "" : clients.get(0));
 
-    UserDto user = userService.getUserById(id, clientId);
+    UserDto user = userService.getUserById(id, selectedClient);
 
     model.addAttribute("user", user);
     model.addAttribute("clients", clients);
