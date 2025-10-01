@@ -10,7 +10,22 @@ spring:
       username: root
       password: password
       authentication-database: admin
-
+  ai:
+    mcp:
+      server:
+        name: webmvc-mcp-server
+        version: 1.0.0
+        instructions: "This server provides user management system"
+        stdio: false
+        enabled: true
+        type: SYNC
+        capabilities:
+          tool: true
+          resource: false
+          prompt: false
+          completion: false
+        sseEndpoint: /sse
+        sse-message-endpoint: /mcp/message
 
 logging.level:
   org.mongodb.driver.protocol: DEBUG
